@@ -31,9 +31,11 @@ class UtilsTest(unittest.TestCase):
   def testEnableIpv6(self, mock_call, mock_sysctl):
     mocks = mock.Mock()
     mocks.attach_mock(mock_call, 'call')
+    mocks.attach_mock(mock_sysctl, 'sysctl')
 
     utils.Utils.EnableIpv6(self.mock_setup, ['A', 'B'], self.mock_logger)
-    expected_calls = [mock.call.call(['A', 'B'], mock.ANY)]
+    expected_calls = [mock.call.call(['A', 'B'], mock.ANY),
+                      mock.call.sysctl(['A', 'B'], mock.ANY)]
     self.assertEqual(mocks.mock_calls, expected_calls)
 
   @mock.patch('google_compute_engine.distro_lib.helpers.CallDhclient')
