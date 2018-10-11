@@ -27,7 +27,8 @@ class UtilsTest(unittest.TestCase):
     self.mock_setup = mock.create_autospec(utils.Utils)
 
   @mock.patch('google_compute_engine.distro_lib.helpers.CallDhclientIpv6')
-  def testEnableIpv6(self, mock_call):
+  @mock.patch('google_compute_engine.distro_lib.helpers.SetRouteInformationSysctlIPv6')
+  def testEnableIpv6(self, mock_call, mock_sysctl):
     mocks = mock.Mock()
     mocks.attach_mock(mock_call, 'call')
 
