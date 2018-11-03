@@ -27,7 +27,7 @@ fi
 yum -y install git rpmdevtools \
   python2-devel python-setuptools python-boto \
   make gcc-c++ libcurl-devel json-c json-c-devel pam-devel \
-  policycoreutils-python
+  policycoreutils-python ndisc6
 
 # Clone the github repo.
 git clone ${GIT_REPO} -b ${BRANCH}

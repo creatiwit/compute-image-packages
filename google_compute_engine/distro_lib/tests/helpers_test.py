@@ -74,7 +74,10 @@ class HelpersTest(unittest.TestCase):
     mocks.attach_mock(self.mock_logger, 'logger')
 
     mock_exists.side_effect = [True]
-    mock_call.side_effect = [None, None, subprocess.CalledProcessError(1, 'Test'),
+    mock_call.side_effect = [None, None, None,None,
+                             subprocess.CalledProcessError(1, 'Test'),
+                             subprocess.CalledProcessError(1, 'Test'),
+                             subprocess.CalledProcessError(1, 'Test'),
                              subprocess.CalledProcessError(1, 'Test')]
 
     helpers.SetRouteInformationSysctlIPv6(['a', 'b'], self.mock_logger)
@@ -82,11 +85,18 @@ class HelpersTest(unittest.TestCase):
     expected_calls = [
         mock.call.logger.info(mock.ANY, ['a', 'b']),
         mock.call.call(['sysctl', '-w', 'net.ipv6.conf.a.accept_ra_rt_info_max_plen=128']),
+        mock.call.call(['rdisc6', 'a']),
         mock.call.call(['sysctl', '-w', 'net.ipv6.conf.b.accept_ra_rt_info_max_plen=128']),
+        mock.call.call(['rdisc6', 'b']),
+
         mock.call.logger.info(mock.ANY, ['c', 'd']),
         mock.call.call(['sysctl', '-w', 'net.ipv6.conf.c.accept_ra_rt_info_max_plen=128']),
         mock.call.logger.warning(mock.ANY, 'c'),
+        mock.call.call(['rdisc6', 'c']),
+        mock.call.logger.warning(mock.ANY, 'c'),
         mock.call.call(['sysctl', '-w', 'net.ipv6.conf.d.accept_ra_rt_info_max_plen=128']),
+        mock.call.logger.warning(mock.ANY, 'd'),
+        mock.call.call(['rdisc6', 'd']),
         mock.call.logger.warning(mock.ANY, 'd'),
     ]
     self.assertEqual(mocks.mock_calls, expected_calls)
