@@ -51,14 +51,21 @@ def SetRouteInformationSysctlIPv6(interfaces, logger):
   logger.info('Enabling Route Advertisements on the Ethernet interfaces %s.', interfaces)
 
   sysctl_command = ['sysctl', '-w']
+  rdisc6_command = ['rdisc6']
   for interface in interfaces:
     sysctl_var = ('net.ipv6.conf.{ethinterface}.accept_ra_rt_info_max_plen={value}'.format(
         ethinterface=interface, value=128))
     try:
       subprocess.check_call(sysctl_command + [sysctl_var])
     except subprocess.CalledProcessError:
-      logger.warning('Could not enable Route Advertisements on interfaces %s.',
+      logger.warning('Could not enable Route Advertisement on interface %s.',
                      interface)
+    try:
+      subprocess.check_call(rdisc6_command + [interface])
+    except subprocess.CalledProcessError:
+        logger.warning('Could not send Route Advertisement solicit on interface %s.',
+                       interface)
+
 
 def CallDhclientIpv6(interfaces, logger, dhclient_script=None):
   """Configure the network interfaces for IPv6 using dhclient.

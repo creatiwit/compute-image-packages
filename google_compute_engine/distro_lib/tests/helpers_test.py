@@ -65,6 +65,44 @@ class HelpersTest(unittest.TestCase):
 
     self.assertEqual(mocks.mock_calls, expected_calls)
 
+<<<<<<< HEAD
+=======
+  @mock.patch('google_compute_engine.distro_lib.helpers.os.path.exists')
+  @mock.patch('google_compute_engine.distro_lib.helpers.subprocess.check_call')
+  def testSetRouteInformationSysctlIPv6(self, mock_call, mock_exists):
+    mocks = mock.Mock()
+    mocks.attach_mock(mock_exists, 'exists')
+    mocks.attach_mock(mock_call, 'call')
+    mocks.attach_mock(self.mock_logger, 'logger')
+
+    mock_exists.side_effect = [True]
+    mock_call.side_effect = [None, None, None,None,
+                             subprocess.CalledProcessError(1, 'Test'),
+                             subprocess.CalledProcessError(1, 'Test'),
+                             subprocess.CalledProcessError(1, 'Test'),
+                             subprocess.CalledProcessError(1, 'Test')]
+
+    helpers.SetRouteInformationSysctlIPv6(['a', 'b'], self.mock_logger)
+    helpers.SetRouteInformationSysctlIPv6(['c', 'd'], self.mock_logger)
+    expected_calls = [
+        mock.call.logger.info(mock.ANY, ['a', 'b']),
+        mock.call.call(['sysctl', '-w', 'net.ipv6.conf.a.accept_ra_rt_info_max_plen=128']),
+        mock.call.call(['rdisc6', 'a']),
+        mock.call.call(['sysctl', '-w', 'net.ipv6.conf.b.accept_ra_rt_info_max_plen=128']),
+        mock.call.call(['rdisc6', 'b']),
+
+        mock.call.logger.info(mock.ANY, ['c', 'd']),
+        mock.call.call(['sysctl', '-w', 'net.ipv6.conf.c.accept_ra_rt_info_max_plen=128']),
+        mock.call.logger.warning(mock.ANY, 'c'),
+        mock.call.call(['rdisc6', 'c']),
+        mock.call.logger.warning(mock.ANY, 'c'),
+        mock.call.call(['sysctl', '-w', 'net.ipv6.conf.d.accept_ra_rt_info_max_plen=128']),
+        mock.call.logger.warning(mock.ANY, 'd'),
+        mock.call.call(['rdisc6', 'd']),
+        mock.call.logger.warning(mock.ANY, 'd'),
+    ]
+    self.assertEqual(mocks.mock_calls, expected_calls)
+
   @mock.patch('google_compute_engine.distro_lib.helpers.subprocess.check_call')
   def testCallHwclock(self, mock_call):
     command = ['/sbin/hwclock', '--hctosys']
