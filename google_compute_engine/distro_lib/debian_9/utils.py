@@ -32,6 +32,7 @@ class Utils(utils.Utils):
       dhclient_script: string, the path to a dhclient script used by dhclient.
     """
     helpers.CallDhclientIpv6(interfaces, logger)
+    helpers.SetRouteInformationSysctlIPv6(interfaces, logger)
 
   def EnableNetworkInterfaces(self, interfaces, logger, dhclient_script=None):
     """Enable the list of network interfaces.
