@@ -65,8 +65,6 @@ class HelpersTest(unittest.TestCase):
 
     self.assertEqual(mocks.mock_calls, expected_calls)
 
-<<<<<<< HEAD
-=======
   @mock.patch('google_compute_engine.distro_lib.helpers.os.path.exists')
   @mock.patch('google_compute_engine.distro_lib.helpers.subprocess.check_call')
   def testSetRouteInformationSysctlIPv6(self, mock_call, mock_exists):

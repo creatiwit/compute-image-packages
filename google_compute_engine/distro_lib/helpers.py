@@ -66,7 +66,6 @@ def SetRouteInformationSysctlIPv6(interfaces, logger):
         logger.warning('Could not send Route Advertisement solicit on interface %s.',
                        interface)
 
-
 def CallDhclientIpv6(interfaces, logger, dhclient_script=None):
   """Configure the network interfaces for IPv6 using dhclient.
 
