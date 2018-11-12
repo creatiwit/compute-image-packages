@@ -51,17 +51,24 @@ def SetRouteInformationSysctlIPv6(interfaces, logger):
 
   sysctl_command = ['sysctl', '-w']
   for interface in interfaces:
-    sysctl_plen_var = ('net.ipv6.conf.{ethinterface}.accept_ra_rt_info_max_plen={value}'.format(
+    sysctl_plen_var = (
+        'net.ipv6.conf.{ethinterface}.accept_ra_rt_info_max_plen={value}'.format(
         ethinterface=interface, value=128))
-    sysctl_disable_v6_var = ('net.ipv6.conf.all.disable_ipv6=1')
-    sysctl_enable_v6_var = ('net.ipv6.conf.all.disable_ipv6=0')
     try:
       subprocess.check_call(sysctl_command + [sysctl_plen_var])
-      subprocess.check_call(sysctl_command + [sysctl_disable_v6_var])
-      subprocess.check_call(sysctl_command + [sysctl_enable_v6_var])
     except subprocess.CalledProcessError:
-      logger.warning('Could not enable Route Advertisements on interfaces %s.',
-                     interface)
+       logger.warning('Could not enable Route Advertisements on interfaces %s.',
+                      interface)
+  sysctl_disable_v6_var = ('net.ipv6.conf.all.disable_ipv6=1')
+  sysctl_enable_v6_var = ('net.ipv6.conf.all.disable_ipv6=0')
+  try:
+    subprocess.check_call(sysctl_command + [sysctl_disable_v6_var])
+  except subprocess.CalledProcessError:
+    logger.warning('Could not disable IPv6')
+  try:
+    subprocess.check_call(sysctl_command + [sysctl_enable_v6_var])
+  except subprocess.CalledProcessError:
+    logger.warning('Could not enable IPv6')
 
 def CallDhclientIpv6(interfaces, logger, dhclient_script=None):
   """Configure the network interfaces for IPv6 using dhclient.

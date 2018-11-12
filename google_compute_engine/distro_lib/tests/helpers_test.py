@@ -106,8 +106,12 @@ class HelpersTest(unittest.TestCase):
     mocks.attach_mock(self.mock_logger, 'logger')
 
     mock_exists.side_effect = [True]
-    mock_call.side_effect = [None, None, subprocess.CalledProcessError(1, 'Test'),
-                             subprocess.CalledProcessError(1, 'Test')]
+    mock_call.side_effect = [None, None,None, None,
+                             subprocess.CalledProcessError(1, 'Test'),
+                             subprocess.CalledProcessError(1, 'Test'),
+                             subprocess.CalledProcessError(1, 'Test'),
+                             subprocess.CalledProcessError(1, 'Test'),
+                             ]
 
     helpers.SetRouteInformationSysctlIPv6(['a', 'b'], self.mock_logger)
     helpers.SetRouteInformationSysctlIPv6(['c', 'd'], self.mock_logger)
@@ -115,11 +119,17 @@ class HelpersTest(unittest.TestCase):
         mock.call.logger.info(mock.ANY, ['a', 'b']),
         mock.call.call(['sysctl', '-w', 'net.ipv6.conf.a.accept_ra_rt_info_max_plen=128']),
         mock.call.call(['sysctl', '-w', 'net.ipv6.conf.b.accept_ra_rt_info_max_plen=128']),
+        mock.call.call(['sysctl', '-w', 'net.ipv6.conf.all.disable_ipv6=1']),
+        mock.call.call(['sysctl', '-w', 'net.ipv6.conf.all.disable_ipv6=0']),
         mock.call.logger.info(mock.ANY, ['c', 'd']),
         mock.call.call(['sysctl', '-w', 'net.ipv6.conf.c.accept_ra_rt_info_max_plen=128']),
         mock.call.logger.warning(mock.ANY, 'c'),
         mock.call.call(['sysctl', '-w', 'net.ipv6.conf.d.accept_ra_rt_info_max_plen=128']),
         mock.call.logger.warning(mock.ANY, 'd'),
+        mock.call.call(['sysctl', '-w', 'net.ipv6.conf.all.disable_ipv6=1']),
+        mock.call.logger.warning(mock.ANY),
+        mock.call.call(['sysctl', '-w', 'net.ipv6.conf.all.disable_ipv6=0']),
+        mock.call.logger.warning(mock.ANY),
     ]
     self.assertEqual(mocks.mock_calls, expected_calls)
 
